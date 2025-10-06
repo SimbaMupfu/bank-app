@@ -2,6 +2,7 @@ package inc.sims.hustles.accounts.service.impl;
 
 import inc.sims.hustles.accounts.constants.AccountsConstants;
 import inc.sims.hustles.accounts.dto.CustomerDto;
+import inc.sims.hustles.accounts.exception.CustomerAlreadyExistsException;
 import inc.sims.hustles.accounts.mapper.CustomerMapper;
 import inc.sims.hustles.accounts.model.Accounts;
 import inc.sims.hustles.accounts.model.Customer;
@@ -11,6 +12,7 @@ import inc.sims.hustles.accounts.service.IAccountsService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -23,6 +25,10 @@ public class AccountsServiceImpl implements IAccountsService {
     @Override
     public void createAccount(CustomerDto customerDto) {
         Customer customer = CustomerMapper.mapToCustomer(new Customer(), customerDto);
+        Optional<Customer> optionalCustomer = customerRepository.findByMobileNumber(customerDto.getMobileNumber());
+        if(optionalCustomer.isPresent()){
+            throw new CustomerAlreadyExistsException("Customer is already registered with given mobile number " + customerDto.getMobileNumber());
+        }
         Customer savedCustomer = customerRepository.save(customer);
         accountsRepository.save(createNewAccount(savedCustomer));
     }
