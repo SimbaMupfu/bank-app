@@ -19,5 +19,5 @@ public class BaseModel {
     @Column(insertable = false)
     private LocalDateTime updatedAt;
     @Column(insertable = false)
-    private String updateBy;
+    private String updatedBy;
 }
